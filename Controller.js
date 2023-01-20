@@ -2,16 +2,8 @@ const User = require("./models/User");
 const Role = require("./models/Role");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const token = require("./token/generateToken");
 const { validationResult } = require("express-validator");
-const { secret } = require("./config");
-
-const generateAccessToken = (id, roles) => {
-  const payload = {
-    id,
-    roles,
-  };
-  return jwt.sign(payload, secret, { expiresIn: "24h" });
-};
 
 class authController {
   async registration(req, res) {
@@ -37,6 +29,7 @@ class authController {
         roles: [userRole.value],
       });
       await user.save();
+      з;
       return res.json({ message: "Пользователь успешно зарегистрирован" });
     } catch (e) {
       console.log(e);
@@ -57,9 +50,9 @@ class authController {
       }
       const token = generateAccessToken(user._id, user.roles);
       return res.json({ token });
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({ message: "Login error" });
+    } catch (err) {
+      // console.log(err.message);
+      res.status(400).json({ message: "Login error" + err.message });
     }
   }
 
