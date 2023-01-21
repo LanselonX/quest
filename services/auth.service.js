@@ -1,17 +1,11 @@
 const User = require("../models/User");
 const Role = require("../models/Role");
-const token = require("../controllers/tokens.controller");
+const tokensController = require("../controllers/tokens.controller");
 const bcrypt = require("bcryptjs");
 // const controller = require("../controllers/auth.controller");
 
 class AuthService {
   async registration(username, password) {
-    // const canditate = await User.findOne({ username });
-    // if (canditate) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Пользователь с таким именем существует" });
-    // }
     const hashPassword = bcrypt.hashSync(password, 7);
     const userRole = await Role.findOne({ value: "USER" });
     const user = new User({
@@ -36,6 +30,12 @@ class AuthService {
     }
     const token = generateAccessToken(user._id, user.roles);
     return res.json({ token });
+  }
+
+  async checkUser(username) {
+    const candidate = await User.findOne({ username });
+
+    return candidate;
   }
 }
 
