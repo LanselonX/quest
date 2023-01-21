@@ -18,13 +18,13 @@ class AuthController {
       const { username, password } = req.body;
 
       const result = await authService.registration(username, password);
-      const canditate = await User.findOne({ username });
+      const canditate = await User.findOne({ username }); 
       if (canditate) {
         return res
           .status(400)
           .json({ message: "Пользователь с таким именем существует" });
       }
-      return res.json({
+      return res.json({ 
         message: "Пользователь успешно зарегистрирован",
         result,
       });
