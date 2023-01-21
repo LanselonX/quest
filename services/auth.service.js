@@ -15,26 +15,28 @@ class AuthService {
     });
     await user.save();
     const tokens = tokensController.generateTokens(user._id, user.roles);
-
     return tokens;
   }
 
-  async login(username, password) {
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ message: `Пользователь не найден` });
-    }
-    const validPassword = bcrypt.compareSync(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ message: "Введен неверный пароль" });
-    }
-    const token = generateAccessToken(user._id, user.roles);
-    return res.json({ token });
-  }
+  // async login(username, passowrd) {
+  //   const tokens = tokensController.generateTokens(user._id, user.roles);
+  //   return tokens;
+  // }
+  // async login(username, password) {
+  //   const user = await User.findOne({ username });
+  //   if (!user) {
+  //     return res.status(400).json({ message: `Пользователь не найден` });
+  //   }
+  //   const validPassword = bcrypt.compareSync(password, user.password);
+  //   if (!validPassword) {
+  //     return res.status(400).json({ message: "Введен неверный пароль" });
+  //   }
+  //   const token = generateAccessToken(user._id, user.roles);
+  //   return res.json({ token });
+  // }
 
   async checkUser(username) {
     const candidate = await User.findOne({ username });
-
     return candidate;
   }
 }

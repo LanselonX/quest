@@ -1,12 +1,11 @@
-const User = require("../models/User");
-const Role = require("../models/Role");
+const User = require("./models/User");
+const Role = require("./models/Role");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const token = require("./token/generateToken");
 const { validationResult } = require("express-validator");
-const tokensController = require("./tokens.controller");
-const zcxc = require("./users.controller");
-const authService = require("../services/auth.service");
 
-class AuthController {
+class authController {
   async registration(req, res) {
     try {
       const errors = validationResult(req);
@@ -22,14 +21,18 @@ class AuthController {
           .status(400)
           .json({ message: "Пользователь с таким именем существует" });
       }
-      const result = await authService.registration(username, password);
-      return res.json({
-        message: "Пользователь успешно зарегистрирован",
-        result,
+      const hashPassword = bcrypt.hashSync(password, 7);
+      const userRole = await Role.findOne({ value: "USER" });
+      const user = new User({
+        username,
+        password: hashPassword,
+        roles: [userRole.value],
       });
+      await user.save();
+      return res.json({ message: "Пользователь успешно зарегистрирован" });
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: "Registration error: " + e });
+      res.status(400).json({ message: "Registration error" });
     }
   }
 
@@ -44,13 +47,20 @@ class AuthController {
       if (!validPassword) {
         return res.status(400).json({ message: "Введен неверный пароль" });
       }
-      const token = generateTokens(user._id, user.roles);
+      const token = generateAccessToken(user._id, user.roles);
       return res.json({ token });
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: "Login error" + e.message });
+      res.status(400).json({ message: "Login error" });
     }
+  }
+
+  async getUsers(req, res) {
+    try {
+      const users = await User.find();
+      res.json(users);
+    } catch (e) {}
   }
 }
 
-module.exports = new AuthController();
+module.exports = new authController();
