@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Role = require("../models/Role");
-const tokensController = require("../controllers/tokens.controller");
+const tokensService = require("../services/tokens.service");
 const bcrypt = require("bcryptjs");
 // const controller = require("../controllers/auth.controller");
 
@@ -14,26 +14,13 @@ class AuthService {
       roles: [userRole.value],
     });
     await user.save();
-    const tokens = tokensController.generateTokens(user._id, user.roles);
+    const tokens = tokensService.generateTokens(user._id, user.roles);
     return tokens;
   }
 
-  // async login(username, passowrd) {
-  //   const tokens = tokensController.generateTokens(user._id, user.roles);
-  //   return tokens;
-  // }
-  // async login(username, password) {
-  //   const user = await User.findOne({ username });
-  //   if (!user) {
-  //     return res.status(400).json({ message: `Пользователь не найден` });
-  //   }
-  //   const validPassword = bcrypt.compareSync(password, user.password);
-  //   if (!validPassword) {
-  //     return res.status(400).json({ message: "Введен неверный пароль" });
-  //   }
-  //   const token = generateAccessToken(user._id, user.roles);
-  //   return res.json({ token });
-  // }
+  async checkPassword(recievedPassword, originalPassword) {
+    return bcrypt.compareSync(recievedPassword, originalPassword);
+  }
 
   async checkUser(username) {
     const candidate = await User.findOne({ username });

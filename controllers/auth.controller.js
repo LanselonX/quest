@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Role = require("../models/Role");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
-const tokensController = require("./tokens.controller");
+const tokensService = require("../services/tokens.service");
 const zcxc = require("./users.controller");
 const authService = require("../services/auth.service");
 
@@ -16,12 +16,13 @@ class AuthController {
           .json({ message: "Ошибка при регистрации", errors });
       }
       const { username, password } = req.body;
-      const canditate = await User.findOne({ username });
+      const canditate = await authService.checkUser(username);
       if (canditate) {
         return res
           .status(400)
           .json({ message: "Пользователь с таким именем существует" });
       }
+
       const result = await authService.registration(username, password);
       return res.json({
         message: "Пользователь успешно зарегистрирован",
@@ -36,15 +37,22 @@ class AuthController {
   async login(req, res) {
     try {
       const { username, password } = req.body;
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(400).json({ message: `Пользователь не найден` });
+      const canditate = await authService.checkUser(username);
+      if (!canditate) {
+        return res.status(400).json({ message: "Пользователь не найден" });
       }
-      const validPassword = bcrypt.compareSync(password, user.password);
+      const validPassword = await authService.checkPassword(
+        password,
+        canditate.password
+      );
+
       if (!validPassword) {
         return res.status(400).json({ message: "Введен неверный пароль" });
       }
-      const token = generateTokens(user._id, user.roles);
+      const token = tokensService.generateTokens(
+        canditate._id,
+        canditate.roles
+      );
       return res.json({ token });
     } catch (e) {
       console.log(e);
