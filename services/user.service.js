@@ -10,7 +10,7 @@ class userService {
       const users = await User.find();
       return users;
     } catch (e) {
-      throw new Error("Пиздец, нихуя не понятно");
+      throw new Error("Пиздец не существует");
     }
   }
 
@@ -24,7 +24,7 @@ class userService {
       if (!user) {
         throw new Error("User ID not found");
       }
-      const team = await teamService.findById(teamId);
+      const team = await Team.findById(teamId);
       if (!team) {
         throw new Error("Team ID not found");
       }
@@ -35,18 +35,13 @@ class userService {
       );
       return updated;
     } catch (e) {
-      throw new Error("Ошибка updateUser" + e.message);
+      if (e.message === "Team ID not found") {
+        console.log("Team registration stopped: " + e.message);
+      } else {
+        throw new Error("Ошибка в updateUser" + e.message);
+      }
     }
   }
 }
 
 module.exports = new userService();
-
-// async getUsers(req, res) {
-//     try {
-//       const users = await User.find();
-//       res.json(users);
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   }

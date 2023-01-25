@@ -2,7 +2,6 @@ const User = require("../models/User");
 const Role = require("../models/Role");
 const tokensService = require("../services/tokens.service");
 const bcrypt = require("bcryptjs");
-// const controller = require("../controllers/auth.controller");
 
 class AuthService {
   async registration(username, password) {

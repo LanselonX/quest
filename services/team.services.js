@@ -19,24 +19,5 @@ class TeamService {
     await userService.updateUser(user, team._id);
     return team;
   }
-
-  async findTeamById(teamId) {
-    return await Team.findById(teamId);
-  }
 }
 module.exports = new TeamService();
-
-// module.exports = new TeamService();
-// const Team = require("../models/Team");
-
-// class TeamService {
-//   async createTeam(username, password) {
-//     const existingTeam = await Team.findOne({ teamname });
-//     if (existingTeam) {
-//       throw new Error("Команда уже существует");
-//     }
-//     const team = new Team({ teamname, country });
-//     await team.save();
-//     return team;
-//   }
-// }
