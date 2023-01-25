@@ -2,6 +2,7 @@ const Router = require("express");
 const router = new Router();
 const { check } = require("express-validator");
 const authController = require("./controllers/auth.controller");
+const teamController = require("./controllers/team.controller");
 const usersController = require("./controllers/users.controller");
 const authMiddleware = require("./middlewaree/authMiddleware");
 
@@ -18,5 +19,6 @@ router.post(
 );
 router.post("/login", authController.login);
 router.get("/users", authMiddleware, usersController.getUsers);
+router.post("/team", authMiddleware, teamController.createTeam);
 
 module.exports = router;
