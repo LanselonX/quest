@@ -20,5 +20,6 @@ router.post(
 router.post("/login", authController.login);
 router.get("/users", authMiddleware, usersController.getUsers);
 router.post("/team", authMiddleware, teamController.createTeam);
+router.put("/memb", authMiddleware, teamController.addTeamMember);
 
 module.exports = router;

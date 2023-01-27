@@ -19,5 +19,18 @@ class TeamService {
     await userService.updateUser(user, team._id);
     return team;
   }
+
+  async addTeamMember(leaderId, teamId) {
+    const team = await Team.findOne({ leader: leaderId });
+    if (!team) {
+      throw new Error("Error: Лидер команды не был найден");
+    }
+    const newUser = await Team.findOne({ _id: teamId });
+    if (!newUser) {
+      throw new Error("Error: Команда не была найдена");
+    }
+    team.members.push(teamId);
+    await team.save();
+  }
 }
 module.exports = new TeamService();
